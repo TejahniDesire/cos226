@@ -8,6 +8,13 @@ public class Autocomplete {
 
     // Initializes the data structure from the given array of terms.
     public Autocomplete(Term[] terms) {
+        if (terms == null)
+            throw new IllegalArgumentException("Null Array");
+        for (int i = 0; i < terms.length; i++) {
+            if (terms[i] == null)
+                throw new IllegalArgumentException("Null Argument");
+        }
+
         this.terms = terms;
         Arrays.sort(this.terms);
     }
@@ -15,6 +22,9 @@ public class Autocomplete {
     // Returns all terms that start with the given prefix,
     // in descending order of weight.
     public Term[] allMatches(String prefix) {
+        if (prefix == null)
+            throw new IllegalArgumentException("Null Argument");
+
         Term key = new Term(prefix, 1);
         int m = numberOfMatches(prefix); // Number of Matches, Log(n)
 
@@ -36,6 +46,9 @@ public class Autocomplete {
 
     // Returns the number of terms that start with the given prefix.
     public int numberOfMatches(String prefix) {
+        if (prefix == null)
+            throw new IllegalArgumentException("Null Argument");
+
         Term key = new Term(prefix, 1);
 
         // Call binary search on prefix and comparator for matching up to
