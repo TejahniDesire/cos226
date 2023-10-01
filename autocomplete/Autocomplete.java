@@ -22,8 +22,7 @@ public class Autocomplete {
         int firstM = BinarySearchDeluxe.firstIndexOf(
                 this.terms, key, Term.byPrefixOrder(prefix.length()));
 
-        Term[] matches = new Term[m];
-
+        Term[] matches = new Term[m]; // Storage for all matching terms
         // m time
         for (int i = firstM; i < firstM + m; i++) {
             matches[i - firstM] = this.terms[i];
