@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Arrays;
@@ -10,13 +12,13 @@ public class Autocomplete {
     public Autocomplete(Term[] terms) {
         if (terms == null)
             throw new IllegalArgumentException("Null Array");
+        this.terms = new Term[terms.length];
         for (int i = 0; i < terms.length; i++) {
             if (terms[i] == null)
                 throw new IllegalArgumentException("Null Argument");
+            this.terms[i] = terms[i]; // Defensive copy
         }
-
-        this.terms = terms;
-        Arrays.sort(this.terms);
+        Arrays.sort(this.terms); // n * log(n) compares
     }
 
     // Returns all terms that start with the given prefix,
@@ -26,11 +28,20 @@ public class Autocomplete {
             throw new IllegalArgumentException("Null Argument");
 
         Term key = new Term(prefix, 1);
-        int m = numberOfMatches(prefix); // Number of Matches, Log(n)
+
 
         // Log(n) time
         int firstM = BinarySearchDeluxe.firstIndexOf(
                 this.terms, key, Term.byPrefixOrder(prefix.length()));
+
+        // If no such prefix found, return zero-length array.
+        if (firstM == -1) return new Term[0];
+
+        int lastM = BinarySearchDeluxe.lastIndexOf(
+                this.terms, key, Term.byPrefixOrder(prefix.length()));
+
+        // Number of matches
+        int m = lastM - firstM + 1;
 
         Term[] matches = new Term[m]; // Storage for all matching terms
         // m time
@@ -38,7 +49,7 @@ public class Autocomplete {
             matches[i - firstM] = this.terms[i];
         }
 
-        // mlog(m) time
+        // m * log(m) time
         Arrays.sort(matches, Term.byReverseWeightOrder());
         return matches;
 
@@ -57,6 +68,9 @@ public class Autocomplete {
                 this.terms, key, Term.byPrefixOrder(prefix.length()));
         int lastM = BinarySearchDeluxe.lastIndexOf(
                 this.terms, key, Term.byPrefixOrder(prefix.length()));
+
+        // If no such key found, return 0;
+        if (firstM == -1) return 0;
 
         return lastM - firstM + 1;
     }
@@ -83,7 +97,7 @@ public class Autocomplete {
         for (int i = 0; i < allMatches2.length; i++)
             StdOut.println(allMatches2[i]);
 
-        /*
+
         StdOut.print("Begin Given Example Main Code \n");
         // read in the terms from a file
         String filename = args[0];
@@ -106,7 +120,7 @@ public class Autocomplete {
             StdOut.printf("%d matches\n", autocomplete.numberOfMatches(prefix));
             for (int i = 0; i < Math.min(k, results.length); i++)
                 StdOut.println(results[i]);
-        }*/
+        }
     }
 
 }

@@ -10,6 +10,12 @@ public class Term implements Comparable<Term> {
 
     // Initializes a term with the given query string and weight.
     public Term(String query, long weight) {
+        if (query == null) {
+            throw new IllegalArgumentException("Null Query");
+        }
+        else if (weight < 0) {
+            throw new IllegalArgumentException("Negative weight");
+        }
         this.query = query;
         this.weight = weight;
     }
@@ -23,13 +29,17 @@ public class Term implements Comparable<Term> {
     private static class ReverseWeightOrderCompare implements Comparator<Term> {
 
         public int compare(Term t1, Term t2) {
-            return -Float.compare(t1.weight, t2.weight);
+            // Using if conditions to avoid negate -2^31.
+            if (Float.compare(t1.weight, t2.weight) > 0) return -1;
+            else if (Float.compare(t1.weight, t2.weight) < 0) return 1;
+            return 0;
         }
     }
 
     // Compares the two terms in lexicographic order,
     // but using only the first r characters of each query.
     public static Comparator<Term> byPrefixOrder(int r) {
+        if (r < 0) throw new IllegalArgumentException("Negative r");
         return new PrefixOrderCompare(r);
     }
 
@@ -46,13 +56,19 @@ public class Term implements Comparable<Term> {
             String s1 = t1.query; // String 1, from term 1
             String s2 = t2.query; // String 2, from term 2
 
-            // Cuts each string down to the first r charecters
-            if (s1.length() > r) // if s1 is smaller than r, leave it as is
-                s1 = t1.query.substring(0, r);
-            if (s2.length() > r) // if s2 is smaller than r, leave it as is
-                s2 = t2.query.substring(0, r);
+            // Compare the first r characters if both strings' lengths are
+            // greater than r.
+            if (s1.length() >= this.r && s2.length() >= this.r) {
+                for (int i = 0; i < this.r; i++) {
+                    if (s1.charAt(i) == s2.charAt(i)) continue;
+                    return (s1.charAt(i) - s2.charAt(i));
+                }
+                return 0; // If all equal, return 0.
+            }
 
-            // Compare only the first r letters
+
+            // If either of the two strings has length less than r,
+            // leave what it is and compare.
             return s1.compareTo(s2);
 
         }

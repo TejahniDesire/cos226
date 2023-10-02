@@ -6,8 +6,18 @@ public class BinarySearchDeluxe {
 
     // Returns the index of the first key in the sorted array a[]
     // that is equal to the search key, or -1 if no such key.
+    // Reference: Elementary Sort slides.
     public static <Key> int firstIndexOf(Key[] a, Key key,
                                          Comparator<Key> comparator) {
+        if (a == null) {
+            throw new IllegalArgumentException("Null Array");
+        }
+        else if (key == null) {
+            throw new IllegalArgumentException("Null Target");
+        }
+        else if (comparator == null) {
+            throw new IllegalArgumentException("Null Comparator");
+        }
         int min = -1; // Record the first index. -1 if no such key.
         int lo = 0, hi = a.length - 1;
         while (lo <= hi) {
@@ -28,6 +38,15 @@ public class BinarySearchDeluxe {
     // Returns the index of the last key in the sorted array a[]
     // that is equal to the search key, or -1 if no such key.
     public static <Key> int lastIndexOf(Key[] a, Key key, Comparator<Key> comparator) {
+        if (a == null) {
+            throw new IllegalArgumentException("Null Array");
+        }
+        else if (key == null) {
+            throw new IllegalArgumentException("Null Target");
+        }
+        else if (comparator == null) {
+            throw new IllegalArgumentException("Null Comparator");
+        }
         int max = -1; // Record the first index. -1 if no such key.
         int lo = 0, hi = a.length - 1;
         while (lo <= hi) {
