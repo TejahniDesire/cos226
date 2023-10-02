@@ -6,6 +6,10 @@ Programming Assignment 3: Autocomplete
  *  finds the first index of a key that is equal to the search key.
  **************************************************************************** */
 
+Step1: conducting the regular binarysearch to find one target key. 
+Step2: Instead of stopping there, conduct further rounds of binarysearch 
+       to the left. 
+Step3: Iterate Step1 and 2, until lo > high 
 
 
 /* *****************************************************************************
@@ -19,11 +23,12 @@ Programming Assignment 3: Autocomplete
  *  select the principal algorithm.
  **************************************************************************** */
 
-Autocomplete() :
+Autocomplete() : Arrays,sort(), or Dual-Pivot Quicksort 
+reference: https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html
 
-allMatches() :
+allMatches() : Arrays,sort(), or Dual-Pivot Quicksort 
 
-numberOfMatches() :
+numberOfMatches() : None. 
 
 /* *****************************************************************************
  *  How many compares (in the worst case) does each of the operations in the
@@ -35,11 +40,11 @@ numberOfMatches() :
  *  leading coefficients and lower-order terms, e.g., Theta(m^2 + m log n).
  **************************************************************************** */
 
-Autocomplete():     Theta(    )
+Autocomplete():     Theta(  n log n  )
 
-allMatches():       Theta(    )
+allMatches():       Theta(  log n + m log m  )
 
-numberOfMatches():  Theta(    )
+numberOfMatches():  Theta(  log n  )
 
 
 
@@ -48,13 +53,13 @@ numberOfMatches():  Theta(    )
  *  Known bugs / limitations.
  **************************************************************************** */
 
-
+N/A
 
 /* *****************************************************************************
  *  Describe any serious problems you encountered.                    
  **************************************************************************** */
 
-
+N/A 
 
 
 /* *****************************************************************************
@@ -62,4 +67,4 @@ numberOfMatches():  Theta(    )
  *  on how much you learned from doing the assignment, and whether    
  *  you enjoyed doing it.                                             
  **************************************************************************** */
-
+First Group Assignment. Excited. 
