@@ -24,17 +24,26 @@ public class PointST<Value> {
 
     // associate the value val with point p
     public void put(Point2D p, Value val) {
+        if (p == null || val == null)
+            throw new IllegalArgumentException("NUll ARGUMENT");
+
         pointsBST.put(p, val);
         // If key already in, overwrites
     }
 
     // value associated with point p
     public Value get(Point2D p) {
+        if (p == null)
+            throw new IllegalArgumentException("NUll ARGUMENT");
+
         return pointsBST.get(p);
     }
 
     // does the symbol table contain point p?
     public boolean contains(Point2D p) {
+        if (p == null)
+            throw new IllegalArgumentException("NUll ARGUMENT");
+
         return pointsBST.contains(p);
     }
 
@@ -45,6 +54,9 @@ public class PointST<Value> {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null)
+            throw new IllegalArgumentException("NUll ARGUMENT");
+        
         RedBlackBST<Point2D, Value> withinRect = new RedBlackBST<Point2D, Value>();
         for (Point2D point : this.points()) {
             if (rect.contains(point))
@@ -76,8 +88,9 @@ public class PointST<Value> {
     // unit testing (required)
     public static void main(String[] args) {
         PointST<Integer> test = new PointST<Integer>();
-        StdOut.println(test.isEmpty());
-        StdOut.println(test.size());
+        StdOut.println("Is the ST Empty? : " + test.isEmpty()); // True
+        StdOut.println("Size of ST: " + test.size()); // 0
+
 
         Point2D apoint = new Point2D(0.52, 0.71);
         Point2D bpoint = new Point2D(0.39, 0.54);
@@ -85,23 +98,38 @@ public class PointST<Value> {
         Point2D dpoint = new Point2D(0.98, 0.28);
         Point2D epoint = new Point2D(1.98, 1.28);
 
+        // False
+        StdOut.println("Contains point (0.52, 0.71)? : " + test.contains(apoint));
+
         test.put(apoint, 0);
         test.put(bpoint, 0);
         test.put(cpoint, 0);
         test.put(dpoint, 0);
         test.put(epoint, 0);
 
-        StdOut.println(test.isEmpty());
-        StdOut.println(test.size());
+        // True
+        StdOut.println("Contains point (0.52, 0.71)? : " + test.contains(apoint));
+        StdOut.println("Value of point (0.39, 0.54): " + test.get(bpoint)); // 0
+        StdOut.println("Is the ST Empty? : " + test.isEmpty()); // False
+        StdOut.println("Size of ST: " + test.size()); //  5
 
+        // (0.74, 0.11)
+        // (0.98, 0.28)
+        // (0.39, 0.54)
+        // (0.52, 0.71)
+        // (1.98, 1.28)
         for (Point2D point : test.points()) {
             StdOut.println(point);
         }
 
-        StdOut.println("Rectangle Testing");
         // rect testing
+        StdOut.println("Distance Testing");
         RectHV testRect = new RectHV(0.0, 0.0, 1.0, 1.0);
 
+        // (0.74, 0.11)
+        // (0.98, 0.28)
+        // (0.39, 0.54)
+        // (0.52, 0.71)
         for (Point2D point : test.range(testRect)) {
             StdOut.println(point);
         }
