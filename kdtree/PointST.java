@@ -1,10 +1,12 @@
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.RedBlackBST;
 import edu.princeton.cs.algs4.StdOut;
 
 public class PointST<Value> {
 
+    // Redblack binary search tree to store points
     private RedBlackBST<Point2D, Value> pointsBST;
 
     // construct an empty symbol table of points
@@ -56,13 +58,13 @@ public class PointST<Value> {
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null)
             throw new IllegalArgumentException("NUll ARGUMENT");
-
-        RedBlackBST<Point2D, Value> withinRect = new RedBlackBST<Point2D, Value>();
+        
+        Queue<Point2D> rangequeue = new Queue<Point2D>();
         for (Point2D point : this.points()) {
             if (rect.contains(point))
-                withinRect.put(point, this.get(point));
+                rangequeue.enqueue(point);
         }
-        return withinRect.keys();
+        return rangequeue;
     }
 
     // a nearest neighbor of point p; null if the symbol table is empty

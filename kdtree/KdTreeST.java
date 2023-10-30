@@ -304,5 +304,7 @@ public class KdTreeST<Value> {
         StdOut.println("Checking Nearest");
         StdOut.println(test.nearest(new Point2D(0.201, 0.301))); // (0.2, 0.3)
         StdOut.println(test.nearest(new Point2D(0.401, 0.701))); // (0.4, 0.7)
+
+
     }
 }
