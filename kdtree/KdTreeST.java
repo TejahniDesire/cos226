@@ -28,6 +28,7 @@ public class KdTreeST<Value> {
 
     // construct an empty symbol table of points
     public KdTreeST() {
+        size = 0;
     }
 
 
@@ -43,8 +44,8 @@ public class KdTreeST<Value> {
 
     // associate the value val with point p
     public void put(Point2D p, Value val) {
-        if (p == null) throw new IllegalArgumentException("Illegal Argument");
-        if (val == null) throw new IllegalArgumentException("Illegal Argument");
+        if ((p == null) || ((val == null)))
+            throw new IllegalArgumentException("Illegal Argument");
 
         // Define the root Rectangle
         RectHV rootrect = new RectHV(Double.NEGATIVE_INFINITY,
@@ -218,7 +219,48 @@ public class KdTreeST<Value> {
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
-        return p;
+        if (p == null) throw new IllegalArgumentException("Illegal Argument");
+        if (this.isEmpty()) return null;
+
+        Node champion = root;
+        return nearestSearch(root, p, champion).p;
+
+    }
+
+    // a nearest neighbor of point p; null if the symbol table is empty
+    private Node nearestSearch(Node x, Point2D p, Node champion) {
+        if (x == null) return champion;
+
+        // Check if x is a better champion
+        if (x.p.distanceSquaredTo(p) < champion.p.distanceSquaredTo(p))
+            champion = x;
+
+
+        // Check the node with the rect containg p first
+        Node nodeCheckFirst;
+        Node nodeCheckSecond;
+        // First condition prevents null pointer excpetion
+        if (x.left != null && x.left.rect.contains(p)) {
+            nodeCheckFirst = x.left;
+            nodeCheckSecond = x.right;
+        }
+        else {
+            nodeCheckFirst = x.right;
+            nodeCheckSecond = x.left;
+        }
+
+        // Only check subtree if rectangle of node may contain better champ
+        if ((nodeCheckFirst != null) &&
+                (nodeCheckFirst.rect.distanceSquaredTo(p) <
+                        champion.p.distanceSquaredTo(p)))
+            champion = nearestSearch(nodeCheckFirst, p, champion);
+
+        if ((nodeCheckSecond != null) &&
+                (nodeCheckSecond.rect.distanceSquaredTo(p) <
+                        champion.p.distanceSquaredTo(p)))
+            champion = nearestSearch(nodeCheckSecond, p, champion);
+
+        return champion;
     }
 
 
@@ -259,5 +301,8 @@ public class KdTreeST<Value> {
         for (Point2D i : temp3) {
             StdOut.println(i.toString()); // See Assignment 4 Website Example
         }
+        StdOut.println("Checking Nearest");
+        StdOut.println(test.nearest(new Point2D(0.201, 0.301))); // (0.2, 0.3)
+        StdOut.println(test.nearest(new Point2D(0.401, 0.701))); // (0.4, 0.7)
     }
 }

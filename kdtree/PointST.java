@@ -56,7 +56,7 @@ public class PointST<Value> {
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null)
             throw new IllegalArgumentException("NUll ARGUMENT");
-        
+
         RedBlackBST<Point2D, Value> withinRect = new RedBlackBST<Point2D, Value>();
         for (Point2D point : this.points()) {
             if (rect.contains(point))
@@ -67,7 +67,6 @@ public class PointST<Value> {
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
-
         if (this.isEmpty())
             return null;
 
