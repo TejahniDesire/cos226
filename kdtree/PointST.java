@@ -56,8 +56,7 @@ public class PointST<Value> {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
-        if (rect == null)
-            throw new IllegalArgumentException("NUll ARGUMENT");
+        if (rect == null) throw new IllegalArgumentException("NUll ARGUMENT");
         
         Queue<Point2D> rangequeue = new Queue<Point2D>();
         for (Point2D point : this.points()) {
@@ -69,6 +68,8 @@ public class PointST<Value> {
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
+        if (p == null) throw new IllegalArgumentException("NUll ARGUMENT");
+
         if (this.isEmpty())
             return null;
 
