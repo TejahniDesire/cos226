@@ -6,7 +6,8 @@ Programming Assignment 5: K-d Trees
  *  2d-tree data structure.
  **************************************************************************** */
 
-
+	Node Contains a variable for the point coordinates, the stored value, 
+	and the rectangle it contains
 
 /* *****************************************************************************
  *  Describe your method for range search in a k-d tree.
@@ -18,6 +19,13 @@ Programming Assignment 5: K-d Trees
  *  Describe your method for nearest neighbor search in a k-d tree.
  **************************************************************************** */
 
+	recursively search the 2D BST while maintaining a champion variable 
+	with the end condition to return if no changes have been made to the
+	current champion or if the current node being checked is null. The 
+	child to be searched next is either the one whos rectangle contains
+	the point in question or the only child. Children whos rectangle
+	is at a larger distance to the point in interest than the current 
+	champion are not searched.
 
 /* *****************************************************************************
  *  How many nearest-neighbor calculations can your PointST implementation
@@ -36,9 +44,9 @@ Programming Assignment 5: K-d Trees
                  # calls to         /   CPU time     =   # calls to nearest()
                  client nearest()       (seconds)        per second
                 ------------------------------------------------------
-PointST:
+PointST:	100		14.3			7		
 
-KdTreeST:
+KdTreeST:	10,000,000      39.8			251,237.3
 
 Note: more calls per second indicates better performance.
 
@@ -47,14 +55,13 @@ Note: more calls per second indicates better performance.
  *  Known bugs / limitations.
  **************************************************************************** */
 
-
+	None
 
 /* *****************************************************************************
  *  Describe any serious problems you encountered.                    
  **************************************************************************** */
 
-
-
+	General tracing of recursive loops was tricky to find bugs efficiently
 
 /* *****************************************************************************
  *  List any other comments here. Feel free to provide any feedback   

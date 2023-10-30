@@ -15,7 +15,7 @@ Programming Assignment 4:  K-d Trees
  *      9/16/22 John von Neumann (lab TA)
  ******************************************************************************/
 
-[write the dates and help received here]
+	None
 
 
 /******************************************************************************
@@ -30,7 +30,8 @@ Programming Assignment 4:  K-d Trees
  *      with University regulations.  /s/ Alan Turing
  ******************************************************************************/
 
-[write and sign the pledge here]
+	This programming assignment represents my own work in accordance
+	with University regulations.  /s/ Tejahni Desire
 
 
 
@@ -40,5 +41,5 @@ Programming Assignment 4:  K-d Trees
  *  Write "NA" if you did not work with a partner.
  ******************************************************************************/
 
-YES / NO / NA
+	YES
 
