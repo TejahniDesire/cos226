@@ -13,6 +13,7 @@ public class KdTreeST<Value> {
         private Node left, right; // The left and right sub-Node on the tree.
         private RectHV rect; // the Rectangle where the Node is located.
 
+
         // Construct the Node
         public Node(Point2D p, Value val, RectHV rect) {
             this.p = p;
@@ -143,9 +144,18 @@ public class KdTreeST<Value> {
     }
 
     // all points in the symbol table
+    /*
+    The idea is to use two queues. First, enqueue the root to queue1; Then,
+    in every while loop:
+    1. dequeue queue1 and indicate the dequeued node as "current".
+    2. enqueue the current.left and current.right
+    3. enqueue "current"'s Point2D p into queue2
+    Once the while loop stops, return queue2.
+     */
     public Iterable<Point2D> points() {
         Queue<Node> queue1 = new Queue<>();
         Queue<Point2D> queue2 = new Queue<>();
+        if (root == null) return queue2;
         queue1.enqueue(root);
         while (!queue1.isEmpty()) {
             Node current = queue1.dequeue();
@@ -162,14 +172,63 @@ public class KdTreeST<Value> {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
-        return new Queue<>();
-
+        if (rect == null) throw new IllegalArgumentException("Illegal Argument");
+        Rangesearch ranges = new Rangesearch(rect);
+        return ranges.queue;
     }
+
+    private class Rangesearch {
+        private RectHV rectangle; // The target rectangle
+
+        // The Iterable that will be returned by range().
+        private Queue<Point2D> queue;
+
+        // Construct the Rangesearch helper class.
+        public Rangesearch(RectHV rectangle) {
+            this.rectangle = rectangle;
+            queue = new Queue<>();
+            search(root, true);
+        }
+
+        // Recursively search
+        private void search(Node x, boolean vertical) {
+            if (x == null) return;
+            if (rectangle.contains(x.p)) queue.enqueue(x.p);
+
+            // Vertical node on the tree
+            if (vertical) {
+                // Intersect?
+                if (x.p.x() >= rectangle.xmin() && x.p.x()
+                        <= rectangle.xmax()) {
+                    search(x.left, false); // horizontal
+                    search(x.right, false);
+                }
+                // Right
+                else if (x.p.x() < rectangle.xmin()) {
+                    search(x.right, false);
+                }
+                else search(x.left, false); // Left
+            }
+            else {
+                // Intersect?
+                if (x.p.y() >= rectangle.ymin() && x.p.y()
+                        <= rectangle.ymax()) {
+                    search(x.left, true); // Vertical
+                    search(x.right, true);
+                }
+                // Above (Right)
+                else if (x.p.y() < rectangle.ymin()) {
+                    search(x.right, true);
+                }
+                else search(x.left, true);  // Bottom (Left)
+            }
+        }
+    }
+
 
     // a nearest neighbor of point p; null if the symbol table is empty
     public Point2D nearest(Point2D p) {
         return p;
-
     }
 
 
@@ -195,6 +254,19 @@ public class KdTreeST<Value> {
         StdOut.println(test.get(point2)); // 2
         Iterable<Point2D> temp = test.points();
         for (Point2D i : temp) {
+            StdOut.println(i.toString()); // See Assignment 4 Website Example
+        }
+        StdOut.println("------");
+        // Test range()
+        RectHV testrect1 = new RectHV(0, 0, 1, 1);
+        Iterable<Point2D> temp2 = test.range(testrect1);
+        for (Point2D i : temp2) {
+            StdOut.println(i.toString()); // See Assignment 4 Website Example
+        }
+        StdOut.println("------");
+        RectHV testrect2 = new RectHV(0, 0, 0.5, 0.5);
+        Iterable<Point2D> temp3 = test.range(testrect2);
+        for (Point2D i : temp3) {
             StdOut.println(i.toString()); // See Assignment 4 Website Example
         }
     }
