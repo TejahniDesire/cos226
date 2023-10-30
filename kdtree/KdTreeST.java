@@ -7,11 +7,14 @@ public class KdTreeST<Value> {
     private Node root; // Root of the Kd-tree
     private int size; // Size of the Kd-tree
 
+    // The Iterable that range() will return.
+    private Queue<Point2D> rangequeue;
+
     private class Node {
         private Point2D p; // The point (location).
         private Value val; // The value.
         private Node left, right; // The left and right sub-Node on the tree.
-        private RectHV rect; // the Rectangle where the Node is located.
+        private RectHV rect; // The Rectangle where the Node is located.
 
 
         // Construct the Node
@@ -173,55 +176,42 @@ public class KdTreeST<Value> {
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) throw new IllegalArgumentException("Illegal Argument");
-        Rangesearch ranges = new Rangesearch(rect);
-        return ranges.queue;
+        rangequeue = new Queue<>();
+        search(root, true, rect);
+        return rangequeue;
     }
 
-    private class Rangesearch {
-        private RectHV rectangle; // The target rectangle
 
-        // The Iterable that will be returned by range().
-        private Queue<Point2D> queue;
+    // Recursively search
+    private void search(Node x, boolean vertical, RectHV rectangle) {
+        if (x == null) return;
+        if (rectangle.contains(x.p)) rangequeue.enqueue(x.p);
 
-        // Construct the Rangesearch helper class.
-        public Rangesearch(RectHV rectangle) {
-            this.rectangle = rectangle;
-            queue = new Queue<>();
-            search(root, true);
+        // Vertical node on the tree
+        if (vertical) {
+            // Intersect?
+            if (x.p.x() >= rectangle.xmin() && x.p.x() <= rectangle.xmax()) {
+                search(x.left, false, rectangle); // horizontal
+                search(x.right, false, rectangle);
+            }
+            // Right
+            else if (x.p.x() < rectangle.xmin()) {
+                search(x.right, false, rectangle);
+            }
+            else search(x.left, false, rectangle); // Left
         }
-
-        // Recursively search
-        private void search(Node x, boolean vertical) {
-            if (x == null) return;
-            if (rectangle.contains(x.p)) queue.enqueue(x.p);
-
-            // Vertical node on the tree
-            if (vertical) {
-                // Intersect?
-                if (x.p.x() >= rectangle.xmin() && x.p.x()
-                        <= rectangle.xmax()) {
-                    search(x.left, false); // horizontal
-                    search(x.right, false);
-                }
-                // Right
-                else if (x.p.x() < rectangle.xmin()) {
-                    search(x.right, false);
-                }
-                else search(x.left, false); // Left
+        // Horizontal
+        else {
+            // Intersect?
+            if (x.p.y() >= rectangle.ymin() && x.p.y() <= rectangle.ymax()) {
+                search(x.left, true, rectangle); // Vertical
+                search(x.right, true, rectangle);
             }
-            else {
-                // Intersect?
-                if (x.p.y() >= rectangle.ymin() && x.p.y()
-                        <= rectangle.ymax()) {
-                    search(x.left, true); // Vertical
-                    search(x.right, true);
-                }
-                // Above (Right)
-                else if (x.p.y() < rectangle.ymin()) {
-                    search(x.right, true);
-                }
-                else search(x.left, true);  // Bottom (Left)
+            // Above (Right)
+            else if (x.p.y() < rectangle.ymin()) {
+                search(x.right, true, rectangle);
             }
+            else search(x.left, true, rectangle);  // Bottom (Left)
         }
     }
 
