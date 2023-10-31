@@ -6,25 +6,30 @@ Programming Assignment 5: K-d Trees
  *  2d-tree data structure.
  **************************************************************************** */
 
-	Node Contains a variable for the point coordinates, the stored value, 
-	and the rectangle it contains
+	Node Contains a variable for the point coordinates, the stored value, its
+	right and left child and the rectangle it contains
 
 /* *****************************************************************************
  *  Describe your method for range search in a k-d tree.
  **************************************************************************** */
 
+    Starting from the root, recursively search along the 2-d tree. In every
+    search, if a target point is found, enqueue that point into a Queue. Then,
+    check if the splitting life segment intersects with the rectangle. If it
+    does, search both subtrees; otherwise prune the subtree that is NOT on the
+    same side with the rectangle. Eventually, return the Queue.
 
 
 /* *****************************************************************************
  *  Describe your method for nearest neighbor search in a k-d tree.
  **************************************************************************** */
 
-	recursively search the 2D BST while maintaining a champion variable 
+	recursively search the 2D BST while maintaining a champion variable
 	with the end condition to return if no changes have been made to the
-	current champion or if the current node being checked is null. The 
-	child to be searched next is either the one whos rectangle contains
-	the point in question or the only child. Children whos rectangle
-	is at a larger distance to the point in interest than the current 
+	current champion or if the current node being checked is null. The
+	child to be searched next is either the one whose rectangle contains
+	the point in question or the only child. Children whose rectangle
+	is at a larger distance to the point in interest than the current
 	champion are not searched.
 
 /* *****************************************************************************
@@ -44,7 +49,7 @@ Programming Assignment 5: K-d Trees
                  # calls to         /   CPU time     =   # calls to nearest()
                  client nearest()       (seconds)        per second
                 ------------------------------------------------------
-PointST:	100		14.3			7		
+PointST:	100		14.3			7
 
 KdTreeST:	10,000,000      39.8			251,237.3
 
@@ -58,13 +63,13 @@ Note: more calls per second indicates better performance.
 	None
 
 /* *****************************************************************************
- *  Describe any serious problems you encountered.                    
+ *  Describe any serious problems you encountered.
  **************************************************************************** */
 
 	General tracing of recursive loops was tricky to find bugs efficiently
 
 /* *****************************************************************************
- *  List any other comments here. Feel free to provide any feedback   
- *  on  how helpful the class meeting was and on how much you learned 
+ *  List any other comments here. Feel free to provide any feedback
+ *  on  how helpful the class meeting was and on how much you learned
  * from doing the assignment, and whether you enjoyed doing it.
  **************************************************************************** */
