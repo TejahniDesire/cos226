@@ -33,6 +33,9 @@ Programming Assignment 4:  K-d Trees
 	This programming assignment represents my own work in accordance
 	with University regulations.  /s/ Tejahni Desire
 
+		This programming assignment represents my own work in accordance
+    	with University regulations.  /s/ Shuchen He
+
 
 
 /******************************************************************************

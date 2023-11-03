@@ -183,7 +183,7 @@ public class KdTreeST<Value> {
     }
 
 
-    // Recursively search
+    // Recursively search [Optimization implemented]
     private void search(Node x, boolean vertical, RectHV rectangle) {
         if (x == null) return;
         if (rectangle.contains(x.p)) rangequeue.enqueue(x.p);
@@ -221,10 +221,7 @@ public class KdTreeST<Value> {
     public Point2D nearest(Point2D p) {
         if (p == null) throw new IllegalArgumentException("Illegal Argument");
         if (this.isEmpty()) return null;
-
-        Node champion = root;
-        return nearestSearch(root, p, champion).p;
-
+        return nearestSearch(root, p, root).p;
     }
 
     // a nearest neighbor of point p; null if the symbol table is empty
@@ -236,30 +233,45 @@ public class KdTreeST<Value> {
             champion = x;
 
 
-        // Check the node with the rect containg p first
-        Node nodeCheckFirst;
-        Node nodeCheckSecond;
-        // First condition prevents null pointer excpetion
-        if (x.left != null && x.left.rect.contains(p)) {
-            nodeCheckFirst = x.left;
-            nodeCheckSecond = x.right;
+        // The following code implements the optimizations.
+        if (x.left == null && x.right == null) return champion;
+
+        else if (x.left == null) {
+            // Only check subtree if rectangle of node may contain better champ
+            if (x.right.rect.distanceSquaredTo(p) <
+                    champion.p.distanceSquaredTo(p)) {
+                champion = nearestSearch(x.right, p, champion);
+            }
+        }
+        else if (x.right == null) {
+            if (x.left.rect.distanceSquaredTo(p) <
+                    champion.p.distanceSquaredTo(p)) {
+                champion = nearestSearch(x.left, p, champion);
+            }
+        }
+
+        // Check the subtree that is toward the point first.
+        else if (x.left.rect.distanceSquaredTo(p)
+                <= x.right.rect.distanceSquaredTo(p)) {
+
+            // Only check subtree if rectangle of node may contain better champ
+            if (x.left.rect.distanceSquaredTo(p) <
+                    champion.p.distanceSquaredTo(p))
+                champion = nearestSearch(x.left, p, champion);
+
+
+            if (x.right.rect.distanceSquaredTo(p) <
+                    champion.p.distanceSquaredTo(p))
+                champion = nearestSearch(x.right, p, champion);
         }
         else {
-            nodeCheckFirst = x.right;
-            nodeCheckSecond = x.left;
+            if (x.right.rect.distanceSquaredTo(p) <
+                    champion.p.distanceSquaredTo(p))
+                champion = nearestSearch(x.right, p, champion);
+            if (x.left.rect.distanceSquaredTo(p) <
+                    champion.p.distanceSquaredTo(p))
+                champion = nearestSearch(x.left, p, champion);
         }
-
-        // Only check subtree if rectangle of node may contain better champ
-        if ((nodeCheckFirst != null) &&
-                (nodeCheckFirst.rect.distanceSquaredTo(p) <
-                        champion.p.distanceSquaredTo(p)))
-            champion = nearestSearch(nodeCheckFirst, p, champion);
-
-        if ((nodeCheckSecond != null) &&
-                (nodeCheckSecond.rect.distanceSquaredTo(p) <
-                        champion.p.distanceSquaredTo(p)))
-            champion = nearestSearch(nodeCheckSecond, p, champion);
-
         return champion;
     }
 
