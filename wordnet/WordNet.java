@@ -18,7 +18,6 @@ public class WordNet {
         In hypernymText = new In(hypernyms);
         hypernymParser(hypernymText);
         synsetParser(synsetsText);
-
     }
 
     // Reads a hypernym text to creat a digraph
