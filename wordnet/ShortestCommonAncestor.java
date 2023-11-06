@@ -80,13 +80,6 @@ public class ShortestCommonAncestor {
         // Then check all adj.
         for (int k : G.adj(v)) {
             if (marked[k]) continue;
-            if (bfsw.hasPathTo(k)) {
-                dist = bfsv.distTo(k) + bfsw.distTo(k);
-                if (dist <= length) {
-                    length = dist;
-                    ancestor = k;
-                }
-            }
             lenancSearch(k, bfsv, bfsw); // Keep searching
         }
 
@@ -169,6 +162,7 @@ public class ShortestCommonAncestor {
         temp2.push(3);
         StdOut.println(temp.lengthSubset(temp1, temp2)); // 1
         StdOut.println(temp.ancestorSubset(temp1, temp2)); // 3
+        /*
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         ShortestCommonAncestor sca = new ShortestCommonAncestor(G);
@@ -179,5 +173,8 @@ public class ShortestCommonAncestor {
             int ancestor = sca.ancestor(v, w);
             StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
         }
+         */
     }
+
+
 }

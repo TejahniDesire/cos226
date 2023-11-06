@@ -11,6 +11,9 @@ public class Test {
         test.addEdge(1, 3);
         test.addEdge(2, 3);
         BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(test, 1);
-        StdOut.println(bfsv.distTo(2));
+        Iterable<Integer> adj = test.adj(0);
+        for (int i : adj) {
+            StdOut.println(i);
+        }
     }
 }
