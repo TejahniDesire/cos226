@@ -1,24 +1,18 @@
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Topological;
 
 public class ShortestCommonAncestor {
     private Digraph G; // Defensive copy of the input
     private int root; // The root vertex
-    private int length; // Length
-    private int ancestor; // Ancestor
-    private boolean[] marked; // Marked Vertex
 
     // constructor takes a rooted DAG as argument
     public ShortestCommonAncestor(Digraph G) {
         if (G == null) throw new IllegalArgumentException("Null Input");
         this.G = new Digraph(G); // Save the defensive copy.
         Topological test = new Topological(this.G);
-        marked = new boolean[this.G.V()];
 
         // Test if G is a DAG
         if (!test.hasOrder()) {
@@ -39,12 +33,33 @@ public class ShortestCommonAncestor {
     }
 
 
+    // Helper method that find ancestor and length at the same time.
+    private int[] lenancSearch(BreadthFirstDirectedPaths bfsv,
+                              BreadthFirstDirectedPaths bfsw) {
+        // initialize length and ancestor.
+        int length = bfsv.distTo(root) + bfsw.distTo(root);
+        int ancestor = root;
+
+        // Element zero is length, and one is ancestor.
+        int[] result = new int[2];
+
+        // Iterate through vertex to search for length and ancestor.
+        for (int i = 0; i < G.V(); i++) {
+            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
+                int dist = bfsv.distTo(i) + bfsw.distTo(i);
+                if (dist < length) {
+                    length = dist;
+                    ancestor = i;
+                }
+            }
+        }
+        result[0] = length;
+        result[1] = ancestor;
+        return result;
+    }
+
+
     // length of shortest ancestral path between v and w
-    /*
-    The idea is starting from one of the two vertex, recursively calculate
-    the length of ancestral paths that go through its reachable parents. Store
-    the champion (both length and ancestor) in an instance variable.
-     */
     public int length(int v, int w) {
         if (v < 0 || v >= this.G.V()) throw new
                 IllegalArgumentException("Input out of range");
@@ -52,40 +67,12 @@ public class ShortestCommonAncestor {
                 IllegalArgumentException("Input out of range");
         BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
         BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
-        length = bfsv.distTo(root) + bfsw.distTo(root);
-        marked = new boolean[this.G.V()]; // clear marked
-        lenancSearch(v, bfsv, bfsw);
-        return length;
-    }
-
-    // Recursive search method for shortest length and ancestor
-    private void lenancSearch(int v, BreadthFirstDirectedPaths bfsv,
-                              BreadthFirstDirectedPaths bfsw) {
-        // A marked array to avoid repeated calculations.
-
-
-        // Check for itself first
-        int dist;
-        marked[v] = true;
-        if (bfsw.hasPathTo(v)) {
-            dist = bfsv.distTo(v) + bfsw.distTo(v);
-            if (dist <= length) {
-                length = dist;
-                ancestor = v;
-            }
-        }
-
-        if (v == root) return;
-
-        // Then check all adj.
-        for (int k : G.adj(v)) {
-            if (marked[k]) continue;
-            lenancSearch(k, bfsv, bfsw); // Keep searching
-        }
-
+        int[] result = lenancSearch(bfsv, bfsw);
+        return result[0];
     }
 
     // a shortest common ancestor of vertices v and w
+    // The idea is: when
     public int ancestor(int v, int w) {
         if (v < 0 || v >= this.G.V()) throw new
                 IllegalArgumentException("Input out of range");
@@ -93,32 +80,19 @@ public class ShortestCommonAncestor {
                 IllegalArgumentException("Input out of range");
         BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
         BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
-        marked = new boolean[this.G.V()]; // clear marked
-        length = bfsv.distTo(root) + bfsw.distTo(root); // Update length
-        lenancSearch(v, bfsv, bfsw);
-        return ancestor;
+        int[] result = lenancSearch(bfsv, bfsw);
+        return result[1];
     }
 
 
-    // length of shortest ancestral path between subset v and w
-    /*
-    The idea is starting from one of the two vertex, recursively calculate
-    the length of ancestral paths that go through its reachable parents. Store
-    the champion (both length and ancestor) in an instance variable.
-     */
     // length of shortest ancestral path of vertex subsets A and B
     public int lengthSubset(Iterable<Integer> subsetA, Iterable<Integer> subsetB) {
         if (subsetA == null) throw new IllegalArgumentException("Null Input");
         if (subsetB == null) throw new IllegalArgumentException("Null Input");
-        BreadthFirstDirectedPaths bfsa = new BreadthFirstDirectedPaths(G, subsetA);
-        BreadthFirstDirectedPaths bfsb = new BreadthFirstDirectedPaths(G, subsetB);
-        length = bfsa.distTo(root) + bfsb.distTo(root); // Update length
-        marked = new boolean[this.G.V()]; // Update marked
-        // Iterate through subsetA
-        for (int i : subsetA) {
-            lenancSearch(i, bfsa, bfsb);
-        }
-        return length;
+        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, subsetA);
+        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, subsetB);
+        int[] result = lenancSearch(bfsv, bfsw);
+        return result[0];
     }
 
 
@@ -126,17 +100,11 @@ public class ShortestCommonAncestor {
     public int ancestorSubset(Iterable<Integer> subsetA, Iterable<Integer> subsetB) {
         if (subsetA == null) throw new IllegalArgumentException("Null Input");
         if (subsetB == null) throw new IllegalArgumentException("Null Input");
-        BreadthFirstDirectedPaths bfsa = new BreadthFirstDirectedPaths(G, subsetA);
-        BreadthFirstDirectedPaths bfsb = new BreadthFirstDirectedPaths(G, subsetB);
-        length = bfsa.distTo(root) + bfsb.distTo(root); // Update length
-        marked = new boolean[this.G.V()]; // Update marked
-        // Iterate through subsetA
-        for (int i : subsetA) {
-            lenancSearch(i, bfsa, bfsb);
-        }
-        return ancestor;
+        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, subsetA);
+        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, subsetB);
+        int[] result = lenancSearch(bfsv, bfsw);
+        return result[1];
     }
-
 
 
     // unit testing (required)
@@ -175,6 +143,5 @@ public class ShortestCommonAncestor {
         }
          */
     }
-
-
 }
+
