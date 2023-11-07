@@ -30,7 +30,8 @@ Programming Assignment 5:  WordNet
  *      with University regulations.  /s/ Alan Turing
  ******************************************************************************/
 
-[write and sign the pledge here]
+	This programming assignment represents my own work in accordance
+	with University regulations.  /s/ Tejahni Desire
 
 
 
@@ -40,5 +41,5 @@ Programming Assignment 5:  WordNet
  *  Write "NA" if you did not work with a partner.
  ******************************************************************************/
 
-YES / NO / NA
+YES 
 
