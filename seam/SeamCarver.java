@@ -2,11 +2,12 @@ import edu.princeton.cs.algs4.Picture;
 
 public class SeamCarver {
     private Picture picture; // Defensive copy
-
+    private int[][] color; // Color matrix
+    private Double[][] energyMat; // Energy matrix
 
     /*
     General Thoughts:
-    Store the RGB of each pixel in a 2-D array. Calculate and store energy
+    Store the RGB of each pixel in a 2-D array. Calculate and store energyMat
     in a local 2-D array if needed. Update the picture every time when
     removing.
      */
@@ -17,6 +18,8 @@ public class SeamCarver {
         if (picture == null) throw new
                 IllegalArgumentException("Null Picture");
         this.picture = new Picture(picture); // Defensive Copy
+        colorMatrix();
+        energyMatrix();
     }
 
     // current picture
@@ -49,8 +52,77 @@ public class SeamCarver {
         return ((x) & 0xFF);
     }
 
+    // Build color matrix
+    // private void colorMatrix() {
+    //     // Build Color matrix
+    //     color = new int[height() + 2][width() + 2];
+    //     for (int col = 1; col <= width(); col++) {
+    //         for (int row = 1; row <= height(); row++) {
+    //             int picCol = col - 1;
+    //             int picRow = row - 1;
+    //             // Copy the outer rows and columns
+    //             color[row][col] = picture.getRGB(picCol, picRow);
+    //             if (col == 1) color[row][0] = picture.getRGB(width() - 1, picRow);
+    //             if (col == width()) color[row][width() + 1] =
+    //                     picture.getRGB(0, picRow);
+    //             if (row == 1) color[0][col] = picture.getRGB(picCol, height() - 1);
+    //             if (row == height()) color[height() + 1][col]
+    //                     = picture.getRGB(picCol, 0);
+    //         }
+    //     }
+    // }
+    private void colorMatrix() {
+        // Build Color matrix
+        color = new int[width() + 2][height() + 2];
+        for (int col = 1; col <= width(); col++) {
+            for (int row = 1; row <= height(); row++) {
+                int picCol = col - 1;
+                int picRow = row - 1;
+                // Copy the outer rows and columns
+                color[col][row] = picture.getRGB(picCol, picRow);
+                if (col == 1) color[0][row] = picture.getRGB(width() - 1, picRow);
+                if (col == width()) color[width() + 1][row] =
+                        picture.getRGB(0, picRow);
+                if (row == 1) color[col][0] = picture.getRGB(picCol, height() - 1);
+                if (row == height()) color[col][height() + 1]
+                        = picture.getRGB(picCol, 0);
+            }
+        }
+    }
 
-    // energy of pixel at column x and row y
+    // Construct energy Matrix
+    public void energyMatrix() {
+        int picHeight = height();
+        int picWidth = width();
+        energyMat = new Double[picWidth][picHeight]; // energyMat(Col, Row) = e(y,x)
+        // color(Col, Row)
+
+        for (int x = 0; x < picWidth; x++)
+            for (int y = 0; y < picHeight; y++) {
+                int colorCol = x + 1;
+                int colorRow = y + 1;
+
+                int rX = getRed(color[colorCol + 1][colorRow]) -
+                        getRed(color[colorCol - 1][colorRow]);
+                int gX = getGreen(color[colorCol + 1][colorRow]) -
+                        getGreen(color[colorCol - 1][colorRow]);
+                int bX = getBlue(color[colorCol + 1][colorRow]) -
+                        getBlue(color[colorCol - 1][colorRow]);
+
+                int rY = getRed(color[colorCol][colorRow + 1]) -
+                        getRed(color[colorCol][colorRow - 1]);
+                int gY = getGreen(color[colorCol][colorRow + 1]) -
+                        getGreen(color[colorCol][colorRow - 1]);
+                int bY = getBlue(color[colorCol][colorRow + 1]) -
+                        getBlue(color[colorCol][colorRow - 1]);
+                int x2 = rX * rX + gX * gX + bX * bX;
+                int y2 = rY * rY + gY * gY + bY * bY;
+
+                energyMat[x][y] = Math.sqrt(x2 + y2);
+            }
+    }
+
+    // energyMat of pixel at column x and row y
     public double energy(int x, int y) {
         // Exception
         int colright = width() - 1;
@@ -60,29 +132,31 @@ public class SeamCarver {
         if (y < 0 || y > rowbottom) throw new
                 IllegalArgumentException("Invalid Row");
 
-        // Build Color matrix
-        int[][] color = new int[height() + 2][width() + 2];
-        for (int col = 1; col <= width(); col++) {
-            for (int row = 1; row <= height(); row++) {
-                // Copy the outer rows and columns
-                color[row][col] = picture.getRGB(col - 1, row - 1);
-                if (col == 1) color[row][0] = picture.getRGB(width() - 1, row - 1);
-                if (col == width()) color[row][width() + 1] =
-                        picture.getRGB(0, row - 1);
-                if (row == 1) color[0][col] = picture.getRGB(col - 1, height() - 1);
-                if (row == height()) color[height() + 1][col]
-                        = picture.getRGB(col - 1, 0);
-            }
-        }
-        int rX = getRed(color[y + 1][x]) - getRed(color[y + 1][x + 2]);
-        int gX = getGreen(color[y + 1][x]) - getGreen(color[y + 1][x + 2]);
-        int bX = getBlue(color[y + 1][x]) - getBlue(color[y + 1][x + 2]);
-        int rY = getRed(color[y][x + 1]) - getRed(color[y + 2][x + 1]);
-        int gY = getGreen(color[y][x + 1]) - getGreen(color[y + 2][x + 1]);
-        int bY = getBlue(color[y][x + 1]) - getBlue(color[y + 2][x + 1]);
-        int x2 = rX * rX + gX * gX + bX * bX;
-        int y2 = rY * rY + gY * gY + bY * bY;
-        return (Math.sqrt(x2 + y2));
+        return energyMat[x][y];
+
+        // // Build Color matrix
+        // int[][] color = new int[height() + 2][width() + 2];
+        // for (int col = 1; col <= width(); col++) {
+        //     for (int row = 1; row <= height(); row++) {
+        //         // Copy the outer rows and columns
+        //         color[row][col] = picture.getRGB(col - 1, row - 1);
+        //         if (col == 1) color[row][0] = picture.getRGB(width() - 1, row - 1);
+        //         if (col == width()) color[row][width() + 1] =
+        //                 picture.getRGB(0, row - 1);
+        //         if (row == 1) color[0][col] = picture.getRGB(col - 1, height() - 1);
+        //         if (row == height()) color[height() + 1][col]
+        //                 = picture.getRGB(col - 1, 0);
+        //     }
+        // }
+        // int rX = getRed(color[y + 1][x]) - getRed(color[y + 1][x + 2]);
+        // int gX = getGreen(color[y + 1][x]) - getGreen(color[y + 1][x + 2]);
+        // int bX = getBlue(color[y + 1][x]) - getBlue(color[y + 1][x + 2]);
+        // int rY = getRed(color[y][x + 1]) - getRed(color[y + 2][x + 1]);
+        // int gY = getGreen(color[y][x + 1]) - getGreen(color[y + 2][x + 1]);
+        // int bY = getBlue(color[y][x + 1]) - getBlue(color[y + 2][x + 1]);
+        // int x2 = rX * rX + gX * gX + bX * bX;
+        // int y2 = rY * rY + gY * gY + bY * bY;
+        // return (Math.sqrt(x2 + y2));
     }
 
     // sequence of indices for horizontal seam
