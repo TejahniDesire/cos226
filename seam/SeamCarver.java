@@ -143,6 +143,7 @@ public class SeamCarver {
             edgeTo[0][k] = -1; // Source node is at row -1
         }
 
+        // go through implicit DAG and relax edges in topological order
         for (int i = 1; i < picWidth; i++) {
             for (int k = 0; k < picHeight; k++) {
 
@@ -173,7 +174,7 @@ public class SeamCarver {
             }
         }
 
-
+        // find smallest path's end edge
         double champ = Double.POSITIVE_INFINITY;
         int champIndex = -1;
         for (int k = 0; k < picHeight; k++) {
@@ -183,6 +184,7 @@ public class SeamCarver {
             }
         }
 
+        // creat seam object
         int[] seam = new int[picWidth];
         seam[picWidth - 1] = champIndex;
         for (int i = picWidth - 2; i >= 0; i--) {
@@ -204,6 +206,7 @@ public class SeamCarver {
             edgeTo[i][0] = -1; // Source node is at row -1
         }
 
+        // go through implicit DAG and relax edges in topological order
         for (int k = 1; k < picHeight; k++) {
             for (int i = 0; i < picWidth; i++) {
 
@@ -234,6 +237,7 @@ public class SeamCarver {
             }
         }
 
+        // find smalled valued path
         double champ = Double.POSITIVE_INFINITY;
         int champIndex = -1;
         for (int i = 0; i < picWidth; i++) {
@@ -247,6 +251,7 @@ public class SeamCarver {
         int[] seam = new int[picHeight];
         seam[picHeight - 1] = champIndex;
 
+        // creat seam object
         for (int k = picHeight - 2; k >= 0; k--) {
             // StdOut.println(seam[k + 1]);
             seam[k] = edgeTo[seam[k + 1]][k + 1];
