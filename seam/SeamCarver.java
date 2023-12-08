@@ -6,9 +6,6 @@ import java.awt.Color;
 public class SeamCarver {
     private Picture picture; // Defensive copy
 
-
-
-
     /*
     General Thoughts:
     Store the RGB of each pixel in a 2-D array. Calculate and store energyMat
@@ -111,233 +108,48 @@ public class SeamCarver {
             }
         return newEnergy;
     }
-    
+
+
     // energyMat of pixel at column x and row y
     public double energy(int x, int y) {
-        // Exception
-        int colright = width() - 1;
-        int rowbottom = height() - 1;
-        if (x < 0 || x > colright) throw new
-                IllegalArgumentException("Invalid column");
-        if (y < 0 || y > rowbottom) throw new
-                IllegalArgumentException("Invalid Row");
+        // Get picture pixels. 0: left| 1: above| 2: right| 3: below|
+        int picHeight = height();
+        int picWidth = width();
 
-        // Storing values needed to a matrix.
-        // left:0
-        // right:1
-        // up:2
-        // down:3
-        int direction = 4;
-        int[] energy = new int[direction];
+        int[] pixels = new int[4];
 
-        if (width() == 1 && height() == 1) return 0;
+        if (x != 0)
+            pixels[0] = picture.getRGB(x - 1, y);
+        else
+            pixels[0] = picture.getRGB(picWidth - 1, y);
 
-        // Case 1
-        if (x == 0 && y == 0) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom);
-                energy[3] = picture().getRGB(x, y + 1);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(colright, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(colright, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, rowbottom);
-                energy[3] = picture.getRGB(x, y + 1);
-            }
-        }
+        if (y != 0)
+            pixels[1] = picture.getRGB(x, y - 1);
+        else
+            pixels[1] = picture.getRGB(x, picHeight - 1);
 
-        // Case 2
-        else if (x == colright && y == 0) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom);
-                energy[3] = picture().getRGB(x, y + 1);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom);
-                energy[3] = picture.getRGB(x, y + 1);
-            }
-        }
+        if (x != width() - 1)
+            pixels[2] = picture.getRGB(x + 1, y);
+        else
+            pixels[2] = picture.getRGB(0, y);
 
-        // Case 3
-        else if (x == 0 && y == rowbottom) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom - 1);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(colright, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(colright, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, rowbottom - 1);
-                energy[3] = picture.getRGB(x, 0);
-            }
-        }
+        if (y != picHeight - 1)
+            pixels[3] = picture.getRGB(x, y + 1);
+        else
+            pixels[3] = picture.getRGB(x, 0);
 
-        // Case 4
-        else if (x == colright && y == rowbottom) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom - 1);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(colright - 1, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom - 1);
-                energy[3] = picture.getRGB(x, 0);
-            }
-        }
+        int rX = getRed(pixels[2]) - getRed(pixels[0]);
+        int gX = getGreen(pixels[2]) - getGreen(pixels[0]);
+        int bX = getBlue(pixels[2]) - getBlue(pixels[0]);
 
-        // Case 5
-        else if (x == 0) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, y - 1);
-                energy[3] = picture().getRGB(x, y + 1);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(colright, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(colright, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, y - 1);
-                energy[3] = picture.getRGB(x, y + 1);
-            }
-        }
+        int rY = getRed(pixels[3]) - getRed(pixels[1]);
+        int gY = getGreen(pixels[3]) - getGreen(pixels[1]);
+        int bY = getBlue(pixels[3]) - getBlue(pixels[1]);
 
-        // Case 6
-        else if (x == colright) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, y - 1);
-                energy[3] = picture().getRGB(x, y + 1);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(colright - 1, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, y - 1);
-                energy[3] = picture.getRGB(x, y + 1);
-            }
-        }
-
-        // Case 7
-        else if (y == 0) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom);
-                energy[3] = picture().getRGB(x, y + 1);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, rowbottom);
-                energy[3] = picture.getRGB(x, y + 1);
-            }
-        }
-
-        // Case 8
-        else if (y == rowbottom) {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, rowbottom - 1);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, rowbottom - 1);
-                energy[3] = picture.getRGB(x, 0);
-            }
-        }
-
-        // Normal Case
-        else {
-            if (width() == 1) {
-                energy[0] = picture.getRGB(0, y);
-                energy[1] = picture.getRGB(0, y);
-                energy[2] = picture.getRGB(x, y - 1);
-                energy[3] = picture().getRGB(x, y + 1);
-            }
-            else if (height() == 1) {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, 0);
-                energy[3] = picture().getRGB(x, 0);
-            }
-            else {
-                energy[0] = picture.getRGB(x - 1, y);
-                energy[1] = picture.getRGB(x + 1, y);
-                energy[2] = picture.getRGB(x, y - 1);
-                energy[3] = picture.getRGB(x, y + 1);
-            }
-        }
-        int rX = getRed(energy[0]) - getRed(energy[1]);
-        int gX = getGreen(energy[0]) - getGreen(energy[1]);
-        int bX = getBlue(energy[0]) - getBlue(energy[1]);
-        int rY = getRed(energy[2]) - getRed(energy[3]);
-        int gY = getGreen(energy[2]) - getGreen(energy[3]);
-        int bY = getBlue(energy[2]) - getBlue(energy[3]);
         int x2 = rX * rX + gX * gX + bX * bX;
         int y2 = rY * rY + gY * gY + bY * bY;
-        return (Math.sqrt(x2 + y2));
+
+        return Math.sqrt(x2 + y2);
     }
 
     // sequence of indices for horizontal seam
