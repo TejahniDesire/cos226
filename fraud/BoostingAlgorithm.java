@@ -24,6 +24,6 @@ public class BoostingAlgorithm {
 
     // unit testing (required)
     public static void main(String[] args) {
-
+        
     }
 }
