@@ -76,9 +76,11 @@ public class Clustering {
         for (int i = 0; i < m; i++) {
             if (!vertexIsMarked[i]) {
                 vertexIsMarked[i] = true;
+                // Check if vertex is in a lone cluster
                 if (locationsClusters.degree(i) == 0) {
                     clusters[i] = clusterNumber;
                 }
+                // Run through all vertices connected to this visited vertex
                 else {
                     clusters[i] = clusterNumber;
                     DijkstraUndirectedSP shortestPath =
@@ -89,11 +91,6 @@ public class Clustering {
                             vertexIsMarked[v] = true;
                         }
                     }
-                    // for (Edge edges : locationsClusters.adj(i)) {
-                    //     int otherVertex = edges.other(i);
-                    //     vertexIsMarked[otherVertex] = true;
-                    //     clusters[otherVertex] = clusterNumber;
-                    // }
                 }
                 clusterNumber++;
             }
@@ -105,7 +102,7 @@ public class Clustering {
         // Corner Cases
         if (i > m - 1 || i < 0)
             throw new IllegalArgumentException("Argument out of Bounds");
-        
+
         return clusters[i];
     }
 
