@@ -46,7 +46,7 @@ public class WeakLearner {
         }
 
         // Add correctly labeled point's weight to total weight but don't
-        // subtract incorrect labeled weights (only use for first weak learner
+        // subtract incorrect labeled weights (only use for first weak learner)
         public void addCorrectPrediction(
                 double kTest, double testWeight, int testLabel) {
             int prediction = predict(kTest);
